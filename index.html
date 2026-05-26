@@ -2,17 +2,29 @@
 <html lang="en">
 <head>
     <style>
-        #myButton {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 32px;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
+        .button-link {
+            display: inline-block;
+            text-decoration: none;
+            font-family: sans-serif;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+
+            color: #00FF66;
+            background-color: #0b2230;
+
+            border: 1.5px solid #00FF66;
+            border-radius: 20px;
+            padding: 10px 24px;
+
             cursor: pointer;
+            transition: all 0.3s ease;
         }
-        #myButton:hover {
-            background-color: #45a049;
+
+        .neon-button:hover {
+            background-color: #00FF66;
+            color: #0b2230;
+            box-shadow: 0 0 15px #00FF66;
         }
     </style>
     <meta charset="UTF-8">
@@ -605,7 +617,7 @@
                 Together we can protect marine life and create cleaner oceans.
             </p>
 
-            <button type="button" id="myButton">Visit the GitHub Repository</button>
+            <a href="https://github.com/Avaitors/AbyssalSquidRepository" class="button-link">Visit the Github repository</a>
         </footer>
 
     </div>
@@ -757,13 +769,6 @@
 
             messages.scrollTop = messages.scrollHeight;
         }
-    </script>
-    
-    <script>
-        const button = document.getElementById('myButton');
-        button.addEventListener('click', function() {
-            alert('It Worked! You clicked the button.');
-        });
     </script>
 </body>
 </html>
