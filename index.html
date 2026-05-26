@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        #myButton {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 32px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        #myButton:hover {
+            background-color: #45a049;
+        }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abyssal Squid</title>
@@ -590,6 +604,8 @@
             <p>
                 Together we can protect marine life and create cleaner oceans.
             </p>
+
+            <button type="button" id="myButton">Visit the GitHub Repository</button>
         </footer>
 
     </div>
@@ -742,6 +758,12 @@
             messages.scrollTop = messages.scrollHeight;
         }
     </script>
-
+    
+    <script>
+        const button = document.getElementById('myButton');
+        button.addEventListener('click', function() {
+            alert('It Worked! You clicked the button.');
+        });
+    </script>
 </body>
 </html>
