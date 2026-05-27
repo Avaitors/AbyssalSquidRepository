@@ -11,7 +11,7 @@ This repository serves as a centralized hub for all project assets, built to giv
 To keep files highly accessible for cross-disciplinary volunteers, the project is structured as follows:
 
 * 📐 `/cad-models` – 3D printable chassis parts, component housings, and STEP/STL files for the squid body.
-* 💻 `/ArduinoSketches` – Backups and latest Arduino SKetches
+* 💻 `/ProjectSQUID` – Backups and latest Arduino SKetches
 * 📊 `/slides-and-docs` – Pitch decks, project presentations, system architectures, and research data.
 * 🖼️ `/media` – High-resolution prototype images, wiring diagrams, and operational test videos.
 * 📄 `BOM.md` – Bill of Materials listing every physical component, part number, and cost estimate.
