@@ -36,7 +36,7 @@ To keep files highly accessible for cross-disciplinary volunteers, the project i
 To review or flash the sensory/detection code locally:
 ```bash
 git clone https://github.com
-cd AbyssalSquidRepository/firmware
+cd AbyssalSquidRepository/ProjectSQUID.ino
 ```
 *(Open the codebase in your preferred IDE, such as VS Code with PlatformIO or the Arduino IDE).*
 
