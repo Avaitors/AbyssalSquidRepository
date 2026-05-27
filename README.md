@@ -51,7 +51,7 @@ We need expertise ranging from mechanical engineering to environmental science! 
 
 ## 📄 License & Attribution
 
-This project is open-source. Hardware designs are licensed under the [CERN Open Hardware Licence](https://ohwr.org) (or your chosen alternative, like MIT/Creative Commons). 
+This project is open-source. Hardware designs are licensed under **Creative Commons**. 
 
 ---
 🌊 Developed with passion by **[Avaitors](https://github.com)**. Help us clear the oceans, one iteration at a time!
