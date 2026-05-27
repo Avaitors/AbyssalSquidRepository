@@ -1,11 +1,6 @@
-# 🫥 Main Tab
 
-# Project MICROPLASTIC:
 
-- [ ] Make video (See this link for guidelines:[LG Centum System™ USP Film](https://www.youtube.com/watch?v=Mj2CQJWqLho))   
-- [x] ~~MAKE AN ARDUINO THAT WORKS and can IDENTIFY MICROPLASTICS~~
-
-# 👏 Arduino: Project DEVIN and PRATYUSH
+# 👏 Arduino
 
 | Arduino |  |  |
 | :---- | :---- | :---- |
