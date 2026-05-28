@@ -26,18 +26,23 @@ To keep files highly accessible for cross-disciplinary volunteers, the project i
 ## 🛠️ Getting Started for Volunteers
 
 ### 1. View Design Files & CAD
+
 * Navigating to the `/cad-models` folder allows you to preview `.STL` files directly inside your browser on GitHub.
 * For editing or modifying designs, we recommend using open or accessible suites like **Fusion 360**, **SolidWorks**, or **FreeCAD**.
 
 ### 2. Review the Slide Decks
+
 * Head to `/slides-and-docs` to download the project overview, performance metrics, and the roadmap detailing our testing phases.
 
 ### 3. Local Setup (For Firmware Developers)
+
 To review or flash the sensory/detection code locally:
+
 ```bash
 git clone https://github.com
 cd AbyssalSquidRepository/ProjectSQUID.ino
 ```
+
 *(Open the codebase in your preferred IDE, such as VS Code with PlatformIO or the Arduino IDE).*
 
 ## 🤝 How to Contribute & Improve the Squid
@@ -51,8 +56,7 @@ We need expertise ranging from mechanical engineering to environmental science! 
 
 ## 📄 License & Attribution
 
-This project is open-source. Hardware designs are licensed under **Creative Commons**. 
+This project is open-source. Hardware designs are licensed under **Creative Commons**.
 
 ---
 🌊 Developed with passion by **[Avaitors](https://github.com)**. Help us clear the oceans, one iteration at a time!
-
