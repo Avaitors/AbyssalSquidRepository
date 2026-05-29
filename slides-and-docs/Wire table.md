@@ -32,4 +32,3 @@
 | Piezo Buzzer |  |  |
 | \+ | Digital 12 | N/A |
 | \- | N/A | GND rail |
-
