@@ -1,13 +1,14 @@
 #include <LiquidCrystal.h>
-#include <Stepper.h>
+#include <AccelStepper.h> // Switched to AccelStepper for non-blocking multi-motor control
 
 // --- LCD SETUP ---
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
 
-// --- STEPPER SETUP ---
-const int stepsPerRevolution = 2048;
-// Sequence updated to 8, 9, 10, 11 for standard 28BYJ-48 stepper drivers (ULN2003)
-Stepper squidMotor(stepsPerRevolution, 8, 10, 9, 11); 
+// --- TWO STEPPER MOTORS SETUP ---
+// Using FULL4WIRE mode (1) for 28BYJ-48 stepper motors
+// Note pin sequence 8, 10, 9, 11 and 1, 3, 2, A4 due to how 28BYJ-48 coils pair
+AccelStepper motor1(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
+AccelStepper motor2(AccelStepper::FULL4WIRE, 1, 3, 2, A4); // Repurposed pins for Motor 2
 
 // --- SENSOR PINS ---
 const int turbidityPin = A0;
@@ -25,7 +26,10 @@ const int distanceThreshold = 20;
 
 // --- TIMING VARIABLES (Non-blocking) ---
 unsigned long lastUpdate = 0;
-const long updateInterval = 500; // Sample every 500ms
+const long updateInterval = 500;    // Sample sensors & refresh LCD every 500ms
+
+unsigned long lastSerialPrint = 0;
+const long serialInterval = 15000;  // Print telemetry & advanced debug data every 15s
 
 void setup() {
   Serial.begin(9600);
@@ -39,8 +43,13 @@ void setup() {
 
   digitalWrite(statusLED, HIGH);
 
-  // Set motor speed to a functional rate (10-15 RPM is standard for 28BYJ-48)
-  squidMotor.setSpeed(12);
+  // Configure Motor 1 (Clockwise Continuous)
+  motor1.setMaxSpeed(500.0);
+  motor1.setSpeed(300.0); // Positive value means clockwise execution
+
+  // Configure Motor 2 (Clockwise Continuous)
+  motor2.setMaxSpeed(500.0);
+  motor2.setSpeed(300.0); // Positive value means clockwise execution
 
   // Startup Splash Screen
   lcd.clear();
@@ -50,14 +59,22 @@ void setup() {
   lcd.print("Initiating...");
   
   tone(buzzerPin, 1200, 200);
-  delay(2000); // Kept short only for initialization display visibility
+  delay(2000); 
   lcd.clear();
+
+  Serial.println(F("=========================================="));
+  Serial.println(F("SYSTEM BOOT: Abyssal Squid Initialized"));
+  Serial.println(F("=========================================="));
 }
 
 void loop() {
+  // FASTEST LOOP: Keep both motors spinning constantly background style
+  motor1.runSpeed();
+  motor2.runSpeed();
+
   unsigned long currentMillis = millis();
 
-  // Run sensor checks and display updates at regular intervals without stopping code execution
+  // 1. MID-SPEED LOOP: Sensor updates & Alert Handling (Every 500ms)
   if (currentMillis - lastUpdate >= updateInterval) {
     lastUpdate = currentMillis;
 
@@ -77,16 +94,22 @@ void loop() {
     if (pollutionDetected) {
       digitalWrite(alertLED, HIGH);
       tone(buzzerPin, 1500);
-      
-      // Step the motor. Note: Large step values here will briefly pause sensor tracking.
-      squidMotor.step(128); 
     } else {
       digitalWrite(alertLED, LOW);
       noTone(buzzerPin);
     }
+  }
 
-    // Serial Logging
-    logToSerial(turbidityRaw, distance, pollutionDetected);
+  // 2. SLOW LOOP: Advanced Serial Debug Reporting (Every 15 Seconds)
+  if (currentMillis - lastSerialPrint >= serialInterval) {
+    lastSerialPrint = currentMillis;
+    
+    // Grab latest readings safely for printing
+    int debugTurbidity = readAverageTurbidity();
+    long debugDistance = getDistanceCM();
+    bool debugAlert = (debugTurbidity > turbidityThreshold || (debugDistance < distanceThreshold && debugDistance > 0));
+    
+    logAdvancedDebug(debugTurbidity, debugDistance, debugAlert, currentMillis);
   }
 }
 
@@ -96,7 +119,7 @@ int readAverageTurbidity() {
   long total = 0;
   for (int i = 0; i < 10; i++) {
     total += analogRead(turbidityPin);
-    delayMicroseconds(500); // Reduced delay to prevent execution lag
+    delayMicroseconds(500); 
   }
   return total / 10;
 }
@@ -105,46 +128,74 @@ long getDistanceCM() {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10); // Standard trigger pulse width is 10 microseconds
+  delayMicroseconds(10); 
   digitalWrite(trigPin, LOW);
 
-  // Timeout added at 30000µs (~500cm max range) to avoid infinite lockups if echo fails
   long duration = pulseIn(echoPin, HIGH, 30000); 
-  if (duration == 0) return -1; // Out of range flag
+  if (duration == 0) return -1; 
 
   return duration * 0.034 / 2;
 }
 
 void updateDisplay(long dist, int turb, bool alert) {
-  // Line 1: Real-time Data
   lcd.setCursor(0, 0);
   lcd.print("D:");
   if (dist > 0) {
     lcd.print(dist);
     lcd.print("cm ");
   } else {
-    lcd.print("Error ");
+    lcd.print("Err  ");
   }
   
   lcd.print("T:");
   lcd.print(turb);
-  lcd.print("    "); // Padding clears old residual numbers
+  lcd.print("    "); 
 
-  // Line 2: System Status
   lcd.setCursor(0, 1);
   if (alert) {
     lcd.print("PLASTIC DETECTED");
   } else {
-    lcd.print("Water Stable    "); // Padding clears "PLASTIC DETECTED" string length
+    lcd.print("Water Stable    "); 
   }
 }
 
-void logToSerial(int turb, long dist, bool alert) {
-  Serial.print("Turbidity: ");
+// --- ADVANCED DEBUGGING FUNCTIONS ---
+
+int getFreeRam() {
+  extern int __heap_start, *__brkval;
+  int v;
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+}
+
+void logAdvancedDebug(int turb, long dist, bool alert, unsigned long uptimeMs) {
+  Serial.println(F("\n--- [ADVANCED SYSTEM DIAGNOSTICS] ---"));
+  
+  Serial.print(F("Uptime: "));
+  Serial.print(uptimeMs / 1000);
+  Serial.println(F(" seconds"));
+
+  Serial.print(F("Sensors -> Turbidity Raw: "));
   Serial.print(turb);
-  Serial.print(" | Distance: ");
-  Serial.print(dist);
-  Serial.print(" cm");
-  if (alert) Serial.print(" | DETECTED");
-  Serial.println();
+  Serial.print(F(" (Threshold: "));
+  Serial.print(turbidityThreshold);
+  Serial.print(F(") | Distance: "));
+  if(dist > 0) {
+    Serial.print(dist);
+    Serial.println(F(" cm"));
+  } else {
+    Serial.println(F("FAULT/OUT-OF-RANGE"));
+  }
+
+  Serial.print(F("System Status -> Threat Flag: "));
+  Serial.print(alert ? F("CRITICAL [POLUTION DETECTED]") : F("NOMINAL"));
+  Serial.print(F(" | Alert LED Pin 13: "));
+  Serial.print(digitalRead(alertLED) ? F("HIGH") : F("LOW"));
+  Serial.print(F(" | Status LED: "));
+  Serial.println(digitalRead(statusLED) ? F("ACTIVE") : F("FAULT"));
+
+  Serial.print(F("Memory Profile -> Free SRAM: "));
+  Serial.print(getFreeRam());
+  Serial.println(F(" Bytes"));
+  
+  Serial.println(F("--------------------------------------"));
 }
