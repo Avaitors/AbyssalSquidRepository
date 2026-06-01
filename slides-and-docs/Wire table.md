@@ -34,20 +34,6 @@
 | **Piezo Buzzer** | | |
 | + | Digital 12 | |
 | - | N/A | GND rail |
-| **Stepper Motor 1 Driver (ULN2003)** | | |
-| VCC (+) | N/A | External 5V supply recommended |
-| GND (-) | N/A | Common GND |
-| IN1 | Digital 8 | |
-| IN2 | Digital 9 | |
-| IN3 | Digital 10 | |
-| IN4 | Digital 11 | |
-| **Stepper Motor 2 Driver (ULN2003)** | | |
-| VCC (+) | N/A | External 5V supply recommended |
-| GND (-) | N/A | Common GND |
-| IN1 | A3 (Digital 17) | |
-| IN2 | A4 (Digital 18) | |
-| IN3 | A5 (Digital 19) | |
-| IN4 | Digital 13 | |
 
 ## Matching Stepper Definitions
 
